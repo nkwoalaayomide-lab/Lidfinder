@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeadGap Scanner</title>
+  <script src="https://tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 p-6">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold">LeadGap Scanner</h1>
+    <p class="text-slate-600 mt-1">Find local businesses without websites and export leads.</p>
+
+    <!-- Inputs -->
+    <div class="bg-white p-4 rounded-xl shadow-sm mt-6 space-y-3">
+      <input id="apiKey" type="password" placeholder="Paste your Google Places API Key here" class="w-full border rounded-lg px-3 py-2 text-sm" />
+      <div class="flex flex-wrap gap-3">
+        <input id="niche" type="text" value="Plumbers" placeholder="Niche (e.g. Plumbers)" class="flex-1 border rounded-lg px-3 py-2" />
+        <input id="city" type="text" value="Houston, TX" placeholder="City (e.g. Houston, TX)" class="flex-1 border rounded-lg px-3 py-2" />
+        <button onclick="scanLeads()" id="scanBtn" class="bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-700">Scan</button>
+      </div>
+    </div>
+
+    <!-- Filter & Export -->
+    <div class="flex items-center justify-between mt-4">
+      <label class="flex items-center gap-2 text-sm font-medium">
+        <input id="noWebOnly" type="checkbox" checked onchange="renderLeads()" />
+        Only show businesses WITHOUT a website
+      </label>
+      <button onclick="downloadCSV()" id="exportBtn" class="hidden bg-white border px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-slate-100">
+        Export CSV
+      </button>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="mt-6 space-y-3"></div>
+  </div>
+
+  <script>
+    let allLeads = [];
+
+    async function scanLeads() {
+      const apiKey = document.getElementById('apiKey').value.trim();
+      const niche = document.getElementById('niche').value.trim();
+      const city = document.getElementById('city').value.trim();
+      const btn = document.getElementById('scanBtn');
+
+      if (!apiKey) return alert('Please paste your Google Places API key first.');
+      btn.innerText = 'Scanning...';
+
+      try {
+        const res = await fetch('https://googleapis.com', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': apiKey,
+            'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.websiteUri,places.rating,places.userRatingCount'
+          },
+          body: JSON.stringify({ textQuery: `${niche} in ${city}`, maxResultCount: 20 })
+        });
+
+        const data = await res.json();
+        if (data.error) return alert(data.error.message);
+
+        allLeads = (data.places || []).map(p => {
+          let score = 0;
+          let gaps = [];
+          if (!p.websiteUri) { score += 40; gaps.push('No Website'); }
+          if (!p.userRatingCount || p.userRatingCount < 10) { score += 30; gaps.push('Low Reviews'); }
+          if (p.rating && p.rating < 4.0) { score += 15; gaps.push('Low Rating'); }
+          if (!p.nationalPhoneNumber) { score += 15; gaps.push('No Phone'); }
+
+          return {
+            name: p.displayName?.text || 'Unknown',
+            address: p.formattedAddress || 'No address',
+            phone: p.nationalPhoneNumber || 'No phone',
+            website: p.websiteUri || '',
+            rating: p.rating || 0,
+            reviews: p.userRatingCount || 0,
+            score,
+            gaps
+          };
+        }).sort((a, b) => b.score - a.score);
+
+        renderLeads();
+      } catch (err) {
+        alert('Error scanning Google Maps. Check your API key.');
+      } finally {
+        btn.innerText = 'Scan';
+      }
+    }
+
+    function renderLeads() {
+      const noWebOnly = document.getElementById('noWebOnly').checked;
+      const filtered = noWebOnly ? allLeads.filter(l => !l.website) : allLeads;
+      const container = document.getElementById('results');
+      document.getElementById('exportBtn').classList.toggle('hidden', filtered.length === 0);
+
+      container.innerHTML = filtered.map(l => `
+        <div class="bg-white p-4 rounded-xl shadow-sm flex justify-between items-center">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="font-bold text-lg">${l.name}</h2>
+              <span class="bg-red-100 text-red-700 text-xs font-bold px-2 py-0.5 rounded-full">Score: ${l.score}/100</span>
+            </div>
+            <p class="text-sm text-slate-600">${l.address}</p>
+            <p class="text-sm font-medium mt-1">Phone: ${l.phone}</p>
+            <div class="flex gap-1 mt-2">
+              ${l.gaps.map(g => `<span class="bg-slate-100 text-xs px-2 py-0.5 rounded">${g}</span>`).join('')}
+            </div>
+          </div>
+          <div class="text-right text-sm">
+            <p class="font-semibold">${l.rating} ★ (${l.reviews})</p>
+            <p class="text-amber-600 font-bold mt-1">${l.website ? 'Has Website' : 'NO WEBSITE'}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function downloadCSV() {
+      const noWebOnly = document.getElementById('noWebOnly').checked;
+      const filtered = noWebOnly ? allLeads.filter(l => !l.website) : allLeads;
+      const csv = ['Name,Phone,Address,Score,Gaps']
+        .concat(filtered.map(l => `"${l.name}","${l.phone}","${l.address}",${l.score},"${l.gaps.join('; ')}"`))
+        .join('\n');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+      a.download = 'leads.csv';
+      a.click();
+    }
+  </script>
+</body>
+</html>
