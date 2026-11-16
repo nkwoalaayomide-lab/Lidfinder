@@ -102,6 +102,17 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.app{display:gri
    <div class="page-head"><div><div class="eyebrow">Workspace configuration</div><h1>Settings</h1><p class="sub">Manage your local workspace and data.</p></div></div>
    <div class="grid layout2">
     <div class="card"><h3>Workspace preferences</h3><div class="formgrid"><div class="field wide"><label>Freelancer / agency name</label><input id="agencyName" placeholder="Your business name"></div><div class="field wide"><label>Primary service</label><input id="primaryService" placeholder="e.g. Website design and development"></div><div class="field wide"><label>Target customer profile</label><textarea id="targetProfile" placeholder="Describe the clients you want to work with..."></textarea></div></div><button class="btn primary" style="margin-top:12px" onclick="saveSettings()">Save preferences</button></div>
+    <div class="card"><h3>AI API settings</h3>
+     <div class="notice">These fields save configuration in this browser. Live AI requests require a secure backend. Do not publish API keys in this HTML file or GitHub.</div>
+     <div class="formgrid">
+      <div class="field"><label>AI provider</label><select id="aiProvider"><option>OpenAI</option><option>Anthropic</option><option>Google Gemini</option><option>OpenAI-compatible API</option></select></div>
+      <div class="field"><label>Model name</label><input id="aiModel" placeholder="e.g. gpt-4.1-mini"></div>
+      <div class="field wide"><label>API key</label><input id="aiApiKey" type="password" autocomplete="off" placeholder="Paste your API key"></div>
+      <div class="field wide"><label>API base URL (optional)</label><input id="aiBaseUrl" placeholder="For compatible providers"></div>
+     </div>
+     <div class="actions" style="margin-top:12px"><button class="btn primary" onclick="saveAISettings()">Save API settings</button><button class="btn" onclick="loadAISettings(true)">Load saved settings</button><button class="btn danger" onclick="clearAISettings()">Clear API settings</button></div>
+     <p class="footer-note" id="aiSettingsStatus">API settings are not connected to a live AI service yet.</p>
+    </div>
     <div class="card"><h3>Data & privacy</h3><p class="muted smalltext">LeadPulse stores saved leads, drafts, plugin preferences and workspace settings in this browser's local storage. Clearing browser data may erase them. Export your leads regularly.</p><div class="actions"><button class="btn" onclick="exportCSV()">Export leads CSV</button><button class="btn danger" onclick="clearData()">Clear local workspace</button></div><p class="footer-note">External discovery requests are sent to public OpenStreetMap services. Avoid collecting or storing sensitive personal information.</p></div>
    </div>
   </section>
@@ -181,8 +192,35 @@ function renderPlugins(){document.getElementById('pluginGrid').innerHTML=pluginD
 function togglePlugin(i){state.plugins[i]=!(state.plugins[i]??(i===4||i===8));persist();renderPlugins();toast('Plugin preference updated. A backend connection may still be required.')}
 function saveSettings(){state.settings={agencyName:document.getElementById('agencyName').value,primaryService:document.getElementById('primaryService').value,targetProfile:document.getElementById('targetProfile').value};persist();toast('Workspace preferences saved.')}
 function exportCSV(){let rows=[['Business','Category','Area','Address','Website','Phone','Email','Opening hours','Stage','Score','Verification notes']];state.leads.forEach(x=>rows.push([x.name,x.category,x.area,x.address,x.website,x.phone,x.email,x.hours,x.stage,x.score,x.notes]));let csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='leadpulse-leads.csv';a.click();URL.revokeObjectURL(a.href);toast('CSV export prepared.')}
+
+function saveAISettings(){
+ let s=state.settings||{};
+ s.aiProvider=document.getElementById('aiProvider').value;
+ s.aiModel=document.getElementById('aiModel').value.trim();
+ s.aiApiKey=document.getElementById('aiApiKey').value;
+ s.aiBaseUrl=document.getElementById('aiBaseUrl').value.trim();
+ state.settings=s;persist();
+ document.getElementById('aiSettingsStatus').textContent='Settings saved in this browser. A secure backend is still required for live AI requests.';
+ toast('AI API settings saved.');
+}
+function loadAISettings(showMessage=false){
+ let s=state.settings||{};
+ document.getElementById('aiProvider').value=s.aiProvider||'OpenAI';
+ document.getElementById('aiModel').value=s.aiModel||'';
+ document.getElementById('aiApiKey').value=s.aiApiKey||'';
+ document.getElementById('aiBaseUrl').value=s.aiBaseUrl||'';
+ if(showMessage) document.getElementById('aiSettingsStatus').textContent=s.aiApiKey?'Saved API settings loaded.':'No API settings have been saved.';
+}
+function clearAISettings(){
+ if(!confirm('Clear the saved AI API settings?'))return;
+ let s=state.settings||{};delete s.aiProvider;delete s.aiModel;delete s.aiApiKey;delete s.aiBaseUrl;
+ state.settings=s;persist();loadAISettings();
+ document.getElementById('aiSettingsStatus').textContent='AI API settings cleared.';
+ toast('AI API settings cleared.');
+}
+
 function clearData(){if(!confirm('This permanently clears leads, drafts, settings and plugin preferences stored in this browser. Continue?'))return;localStorage.removeItem(STORE);state=loadState();found=[];renderOverview();renderLeads();renderDrafts();renderPlugins();renderPipeline();toast('Local workspace cleared.')}
-function init(){renderOverview();renderLeads();renderDrafts();renderPlugins();renderPipeline();let s=state.settings||{};document.getElementById('agencyName').value=s.agencyName||'';document.getElementById('primaryService').value=s.primaryService||'';document.getElementById('targetProfile').value=s.targetProfile||'';refreshDraftLead()}
+function init(){renderOverview();renderLeads();renderDrafts();renderPlugins();renderPipeline();let s=state.settings||{};document.getElementById('agencyName').value=s.agencyName||'';document.getElementById('primaryService').value=s.primaryService||'';document.getElementById('targetProfile').value=s.targetProfile||'';loadAISettings();refreshDraftLead()}
 init();
 </script>
 </body>
