@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#020617">
+  <title>LeadPulse — Local Digital Gap Scanner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: Inter, sans-serif; }
+    button:disabled { cursor: not-allowed; }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 selection:bg-indigo-500 selection:text-white">
+  <nav class="sticky top-0 z-30 border-b border-slate-800/80 bg-slate-900/80 backdrop-blur-md">
+    <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+      <div class="flex items-center gap-2.5">
+        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-indigo-600 to-cyan-400 font-extrabold text-white shadow-lg shadow-indigo-500/20">LP</div>
+        <span class="text-lg font-bold tracking-tight">Lead<span class="text-indigo-400">Pulse</span></span>
+        <span class="ml-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-400">Free data source</span>
+      </div>
+      <div class="hidden text-xs text-slate-400 sm:block">Powered by OpenStreetMap</div>
+    </div>
+  </nav>
+
+  <main class="mx-auto max-w-6xl px-6 py-10">
+    <header class="mx-auto mb-8 max-w-2xl text-center">
+      <h1 class="bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-3xl font-extrabold tracking-tight text-transparent sm:text-4xl">Find Local Businesses Without Websites</h1>
+      <p class="mt-2.5 text-sm text-slate-400 sm:text-base">Discover businesses, identify missing website listings, and prepare personalised outreach pitches.</p>
+    </header>
+
+    <section class="mx-auto max-w-4xl rounded-2xl border border-slate-800 bg-slate-900 p-3 shadow-2xl shadow-black/50">
+      <div class="flex flex-col gap-3 sm:flex-row">
+        <div class="flex-1">
+          <label for="niche" class="mb-1 ml-1 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Business category</label>
+          <select id="niche" class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-slate-100 transition focus:border-indigo-500 focus:outline-none">
+            <option value="plumber">🔧 Plumbers</option>
+            <option value="electrician">⚡ Electricians</option>
+            <option value="hairdresser">💇 Hair salons & barbers</option>
+            <option value="car_repair">🚗 Auto repair shops</option>
+            <option value="restaurant">🍽️ Restaurants</option>
+            <option value="cafe">☕ Cafes</option>
+            <option value="dentist">🦷 Dentists</option>
+            <option value="clinic">🏥 Clinics</option>
+            <option value="bakery">🥐 Bakeries</option>
+            <option value="gym">🏋️ Gyms & fitness centres</option>
+          </select>
+        </div>
+        <div class="flex-1">
+          <label for="city" class="mb-1 ml-1 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Target city</label>
+          <input id="city" type="text" value="Asaba, Nigeria" placeholder="e.g. Asaba, Nigeria" class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-slate-100 transition focus:border-indigo-500 focus:outline-none">
+        </div>
+        <div class="flex items-end">
+          <button id="scanBtn" type="button" onclick="scanOSM()" class="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/25 transition hover:bg-indigo-500 active:scale-[0.99] sm:w-auto">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35M17 11a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z"/></svg>
+            <span id="btnText">Scan city</span>
+          </button>
+        </div>
+      </div>
+      <p class="mt-2 px-1 text-xs text-slate-500">OpenStreetMap coverage varies. “No website listed” means no website was found in the map data; it does not prove the business has no website.</p>
+    </section>
+
+    <section id="statsRow" class="mx-auto mt-8 hidden max-w-4xl grid-cols-1 gap-4 sm:grid-cols-3">
+      <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-5"><p class="text-xs font-medium uppercase tracking-wider text-slate-400">Businesses scanned</p><p id="statTotal" class="mt-1 text-2xl font-extrabold text-white">0</p></div>
+      <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-5"><p class="text-xs font-medium uppercase tracking-wider text-slate-400">No website listed</p><p id="statNoWeb" class="mt-1 text-2xl font-extrabold text-rose-400">0</p></div>
+      <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-5"><p class="text-xs font-medium uppercase tracking-wider text-slate-400">Average gap score</p><p id="statAvgScore" class="mt-1 text-2xl font-extrabold text-amber-400">0/100</p></div>
+    </section>
+
+    <section id="toolbar" class="mx-auto mt-8 hidden max-w-4xl flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+      <label class="flex cursor-pointer select-none items-center gap-2.5 text-sm font-medium text-slate-300">
+        <input id="noWebOnly" type="checkbox" checked onchange="renderLeads()" class="h-4 w-4 cursor-pointer accent-indigo-600">
+        Show only businesses <span class="font-semibold text-rose-400">with no website listed</span>
+      </label>
+      <button type="button" onclick="downloadCSV()" class="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-200 transition hover:bg-slate-700">
+        <svg class="h-4 w-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1m-4-4-4 4m0 0-4-4m4 4V4"/></svg>
+        Export leads (.CSV)
+      </button>
+    </section>
+
+    <section id="emptyState" class="mx-auto mt-12 max-w-4xl rounded-2xl border border-dashed border-slate-800 bg-slate-900/30 px-6 py-14 text-center">
+      <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-800 text-indigo-400">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m17.657 16.657-4.243 4.243a1.998 1.998 0 0 1-2.827 0l-4.244-4.243a8 8 0 1 1 11.314 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+      </div>
+      <h2 class="text-base font-semibold text-slate-200">Ready to scan your target market</h2>
+      <p class="mx-auto mt-1 max-w-md text-sm text-slate-400">Choose a business category, enter a city, and click Scan city.</p>
+    </section>
+
+    <section id="results" class="mx-auto mt-6 max-w-4xl space-y-3.5" aria-live="polite"></section>
+  </main>
+
+  <div id="pitchModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
+      <div class="mb-4 flex items-center justify-between">
+        <h2 id="modalTitle" class="text-lg font-bold text-white">Outreach pitch</h2>
+        <button type="button" onclick="closeModal()" class="text-xl leading-none text-slate-400 hover:text-white" aria-label="Close">&times;</button>
+      </div>
+      <textarea id="pitchText" rows="8" class="w-full rounded-xl border border-slate-800 bg-slate-950 p-3.5 text-sm text-slate-200 focus:outline-none"></textarea>
+      <div class="mt-4 flex justify-end gap-2.5">
+        <button type="button" onclick="closeModal()" class="rounded-xl px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white">Close</button>
+        <button type="button" onclick="copyPitch()" id="copyBtn" class="rounded-xl bg-indigo-600 px-5 py-2 text-xs font-semibold text-white transition hover:bg-indigo-500">Copy message</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+
+    let allLeads = [];
+
+    const CATEGORY_TAGS = {
+      plumber: ['craft', 'plumber'],
+      electrician: ['craft', 'electrician'],
+      hairdresser: ['shop', 'hairdresser'],
+      car_repair: ['shop', 'car_repair'],
+      restaurant: ['amenity', 'restaurant'],
+      cafe: ['amenity', 'cafe'],
+      dentist: ['amenity', 'dentist'],
+      clinic: ['amenity', 'clinic'],
+      bakery: ['shop', 'bakery'],
+      gym: ['leisure', 'fitness_centre']
+    };
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[char]);
+    }
+
+    function safeWebsiteUrl(value) {
+      if (!value) return '';
+      let candidate = String(value).trim();
+      if (!/^https?:\/\//i.test(candidate)) candidate = `https://${candidate}`;
+      try {
+        const parsed = new URL(candidate);
+        return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : '';
+      } catch {
+        return '';
+      }
+    }
+
+    async function scanOSM() {
+      const niche = document.getElementById('niche').value;
+      const city = document.getElementById('city').value.trim();
+      const btn = document.getElementById('scanBtn');
+      const btnText = document.getElementById('btnText');
+
+      if (!city) {
+        alert('Please enter a city name.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.classList.add('opacity-70');
+      btnText.textContent = 'Finding city...';
+
+      try {
+        const geocodeUrl = new URL('https://nominatim.openstreetmap.org/search');
+        geocodeUrl.search = new URLSearchParams({ q: city, format: 'jsonv2', limit: '1' });
+        const geoResponse = await fetch(geocodeUrl, {
+          headers: { 'Accept': 'application/json' }
+        });
+        if (!geoResponse.ok) throw new Error(`City lookup failed (${geoResponse.status}).`);
+        const places = await geoResponse.json();
+        if (!places.length) throw new Error('City not found. Try adding the country name.');
+
+        const bounds = places[0].boundingbox.map(Number);
+        const south = bounds[0];
+        const north = bounds[1];
+        const west = bounds[2];
+        const east = bounds[3];
+        const [tagKey, tagValue] = CATEGORY_TAGS[niche];
+
+        btnText.textContent = 'Scanning map...';
+        const query = `
+          [out:json][timeout:45];
+          (
+            node["${tagKey}"="${tagValue}"](${south},${west},${north},${east});
+            way["${tagKey}"="${tagValue}"](${south},${west},${north},${east});
+            relation["${tagKey}"="${tagValue}"](${south},${west},${north},${east});
+          );
+          out center 100;
+        `;
+
+        const response = await fetch('https://overpass-api.de/api/interpreter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+          body: new URLSearchParams({ data: query })
+        });
+        if (!response.ok) throw new Error(`Map search failed (${response.status}). Please try again shortly.`);
+        const data = await response.json();
+
+        allLeads = (data.elements || [])
+          .filter((element) => element.tags && element.tags.name)
+          .map((element) => {
+            const tags = element.tags;
+            const website = tags.website || tags['contact:website'] || '';
+            const phone = tags.phone || tags['contact:phone'] || '';
+            const street = tags['addr:street']
+              ? `${tags['addr:housenumber'] || ''} ${tags['addr:street']}`.trim()
+              : (tags['addr:full'] || city);
+            const gaps = [];
+            let score = 0;
+
+            if (!website) { score += 50; gaps.push('No website listed'); }
+            if (!phone) { score += 25; gaps.push('No phone listed'); }
+            if (!tags.opening_hours) { score += 25; gaps.push('Opening hours not listed'); }
+
+            return {
+              id: `${element.type}/${element.id}`,
+              name: tags.name,
+              city,
+              niche,
+              address: street,
+              phone: phone || 'Not listed',
+              website,
+              score: Math.min(score, 100),
+              gaps
+            };
+          })
+          .sort((a, b) => b.score - a.score);
+
+        document.getElementById('emptyState').classList.add('hidden');
+        document.getElementById('statsRow').classList.remove('hidden');
+        document.getElementById('statsRow').classList.add('grid');
+        document.getElementById('toolbar').classList.remove('hidden');
+        updateStats();
+        renderLeads();
+      } catch (error) {
+        console.error(error);
+        alert(error.message || 'The OpenStreetMap services are temporarily unavailable. Please try again later.');
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove('opacity-70');
+        btnText.textContent = 'Scan city';
+      }
+    }
+
+    function updateStats() {
+      const noWebsiteCount = allLeads.filter((lead) => !lead.website).length;
+      const averageScore = allLeads.length
+        ? Math.round(allLeads.reduce((sum, lead) => sum + lead.score, 0) / allLeads.length)
+        : 0;
+
+      document.getElementById('statTotal').textContent = allLeads.length;
+      document.getElementById('statNoWeb').textContent = noWebsiteCount;
+      document.getElementById('statAvgScore').textContent = `${averageScore}/100`;
+    }
+
+    function getFilteredLeads() {
+      const noWebOnly = document.getElementById('noWebOnly').checked;
+      return noWebOnly ? allLeads.filter((lead) => !lead.website) : allLeads;
+    }
+
+    function renderLeads() {
+      const container = document.getElementById('results');
+      const filtered = getFilteredLeads();
+
+      if (!filtered.length) {
+        container.innerHTML = '<div class="py-10 text-center text-sm text-slate-400">No businesses matched this filter. Try another category or city.</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map((lead, index) => {
+        const badgeColor = lead.score >= 75
+          ? 'border-rose-500/30 bg-rose-500/15 text-rose-400'
+          : 'border-amber-500/30 bg-amber-500/15 text-amber-400';
+        const websiteUrl = safeWebsiteUrl(lead.website);
+        const websiteLink = websiteUrl
+          ? `<a href="${escapeHtml(websiteUrl)}" target="_blank" rel="noopener noreferrer" class="text-xs text-cyan-400 hover:underline">Visit listed site ↗</a>`
+          : '<span class="text-xs text-rose-400">No website listed</span>';
+
+        return `
+          <article class="flex flex-col justify-between gap-4 rounded-2xl border border-slate-800/90 bg-slate-900 p-5 transition hover:border-slate-700 sm:flex-row sm:items-center">
+            <div class="space-y-2">
+              <div class="flex flex-wrap items-center gap-2.5">
+                <h2 class="text-base font-bold text-white">${escapeHtml(lead.name)}</h2>
+                <span class="rounded-full border px-2.5 py-0.5 text-xs font-bold ${badgeColor}">Gap score: ${lead.score}/100</span>
+              </div>
+              <p class="text-sm text-slate-400">📍 ${escapeHtml(lead.address)} <span class="px-1">•</span> 📞 ${escapeHtml(lead.phone)}</p>
+              <div class="flex flex-wrap gap-1.5">
+                ${lead.gaps.map((gap) => `<span class="rounded-md border border-slate-700/70 bg-slate-800 px-2.5 py-0.5 text-[11px] font-medium text-slate-300">${escapeHtml(gap)}</span>`).join('')}
+              </div>
+              ${websiteLink}
+            </div>
+            <button type="button" onclick="openPitch(${index})" class="shrink-0 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-indigo-500">Generate pitch</button>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function openPitch(index) {
+      const lead = getFilteredLeads()[index];
+      if (!lead) return;
+
+      document.getElementById('modalTitle').textContent = `Pitch for ${lead.name}`;
+      document.getElementById('pitchText').value =
+`Hi ${lead.name} team,
+
+I came across your ${lead.niche.replace('_', ' ')} business in ${lead.city}. I couldn't find a website listed on the business directory I checked, so I wanted to ask whether you already have one.
+
+A clear, mobile-friendly website can help customers learn about your services and contact you more easily. I build websites for local businesses and would be happy to show you a simple idea for yours.
+
+Would you be open to seeing a sample?
+
+Best,
+[Your Name]`;
+
+      const modal = document.getElementById('pitchModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('pitchModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    async function copyPitch() {
+      const pitch = document.getElementById('pitchText');
+      const button = document.getElementById('copyBtn');
+      try {
+        await navigator.clipboard.writeText(pitch.value);
+      } catch {
+        pitch.focus();
+        pitch.select();
+        const copied = document.execCommand('copy');
+        if (!copied) {
+          alert('Copy failed. Please select and copy the message manually.');
+          return;
+        }
+      }
+      button.textContent = 'Copied!';
+      window.setTimeout(() => { button.textContent = 'Copy message'; }, 1500);
+    }
+
+    function csvCell(value) {
+      return `"${String(value ?? '').replace(/"/g, '""')}"`;
+    }
+
+    function downloadCSV() {
+      const filtered = getFilteredLeads();
+      const rows = [
+        ['Name', 'Category', 'City', 'Phone', 'Address', 'Website', 'Gap Score', 'Missing Items'],
+        ...filtered.map((lead) => [
+          lead.name, lead.niche, lead.city, lead.phone, lead.address,
+          lead.website, lead.score, lead.gaps.join('; ')
+        ])
+      ];
+      const csv = rows.map((row) => row.map(csvCell).join(',')).join('\r\n');
+      const blob = new Blob(['\uFEFF', csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'leadpulse-leads.csv';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeModal();
+    });
+  </script>
+</body>
+</html>
