@@ -1,370 +1,189 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#020617">
-  <title>LeadPulse — Local Digital Gap Scanner</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: Inter, sans-serif; }
-    button:disabled { cursor: not-allowed; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b1020">
+<title>LeadPulse Agentic</title>
+<style>
+:root{--bg:#0b1020;--panel:#111a2e;--panel2:#151f36;--line:#26334e;--text:#edf2ff;--muted:#94a3bd;--blue:#6d8cff;--cyan:#52d6d0;--green:#54d69a;--amber:#f2bd65;--red:#ff7777;--radius:16px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% -10%,#1b2b53 0,transparent 34%),var(--bg);color:var(--text);font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.sidebar{border-right:1px solid var(--line);padding:24px 16px;background:#0c1426;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:11px;padding:4px 10px 26px}.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--blue),var(--cyan));display:grid;place-items:center;color:#07101e;font-weight:900;font-size:19px}.brand strong{display:block;font-size:16px;letter-spacing:.2px}.brand small{color:var(--muted)}
+.nav-label{color:#65738f;font-size:10px;font-weight:800;letter-spacing:1.4px;padding:15px 12px 7px}.nav button{width:100%;display:flex;align-items:center;gap:12px;padding:11px 12px;margin:3px 0;border:0;border-radius:10px;color:#aab6cf;background:transparent;text-align:left}.nav button:hover,.nav button.active{background:#1a2947;color:#fff}.nav .ico{width:20px;text-align:center;font-size:16px}.side-bottom{position:absolute;bottom:18px;left:16px;right:16px;border:1px solid var(--line);border-radius:13px;padding:13px;color:var(--muted);font-size:12px}
+.main{min-width:0}.topbar{height:72px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 30px;background:#0b1222cc;backdrop-filter:blur(10px);position:sticky;top:0;z-index:5}.crumb{color:var(--muted)}.crumb b{color:var(--text)}.top-actions{display:flex;align-items:center;gap:10px}.status{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:12px}.dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block}.avatar{width:32px;height:32px;border-radius:50%;background:#263b68;display:grid;place-items:center;font-weight:700}
+.content{padding:30px;max-width:1500px;margin:auto}.page{display:none}.page.active{display:block}.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:24px}.eyebrow{color:var(--cyan);font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase}.page h1{font-size:27px;line-height:1.2;margin:6px 0}.sub{color:var(--muted);margin:0}.btn{border:1px solid var(--line);background:#1a2947;color:var(--text);padding:9px 14px;border-radius:10px;font-weight:650}.btn:hover{filter:brightness(1.15)}.btn.primary{background:linear-gradient(120deg,#6d8cff,#4f76e8);border:0;color:white}.btn.ghost{background:transparent}.btn.danger{color:#ff9b9b;border-color:#633b4b;background:#2a1928}.btn.small{padding:6px 10px;font-size:12px}.grid{display:grid;gap:16px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:18px}.card{background:linear-gradient(180deg,#141f35,#111a2d);border:1px solid var(--line);border-radius:var(--radius);padding:18px;min-width:0}.stat-label{color:var(--muted);font-size:12px}.stat-value{font-size:27px;font-weight:750;margin:5px 0}.stat-foot{font-size:11px;color:var(--muted)}.layout2{grid-template-columns:minmax(0,1.45fr) minmax(280px,.8fr)}.card h3{margin:0 0 14px;font-size:15px}.muted{color:var(--muted)}.smalltext{font-size:12px}.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field label{color:#aab6cf;font-size:12px;font-weight:650}.field input,.field select,.field textarea,.searchbox{width:100%;border:1px solid var(--line);background:#0c1528;color:var(--text);padding:10px 11px;border-radius:9px;outline:none}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue)}.field textarea{min-height:105px;resize:vertical}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.formgrid .wide{grid-column:1/-1}.toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:15px}.toolbar .searchbox{max-width:290px}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:650px}th,td{text-align:left;padding:12px 13px;border-bottom:1px solid #24314a;font-size:12px;vertical-align:middle}th{color:#8392ae;font-size:10px;letter-spacing:1px;text-transform:uppercase;background:#101a2d}tr:last-child td{border-bottom:0}td strong{font-size:13px}.pill{display:inline-flex;align-items:center;gap:5px;border-radius:30px;padding:4px 8px;background:#202e49;color:#b9c8e5;font-size:10px;font-weight:750}.pill.green{background:#153a32;color:#78e0b1}.pill.amber{background:#40321f;color:#f4ca83}.pill.red{background:#41232c;color:#ff9caa}.pill.blue{background:#202e50;color:#9db4ff}.empty{padding:28px;text-align:center;color:var(--muted)}.plugin-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.plugin{display:flex;flex-direction:column;gap:12px}.plugin-top{display:flex;justify-content:space-between;align-items:center}.plugin-icon{width:38px;height:38px;border-radius:11px;background:#223353;display:grid;place-items:center;font-size:18px}.plugin p{color:var(--muted);font-size:12px;margin:0;min-height:38px}.plugin-foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto}.switch{width:37px;height:21px;border-radius:20px;background:#39445c;position:relative;border:0}.switch:after{content:"";position:absolute;left:3px;top:3px;width:15px;height:15px;border-radius:50%;background:#fff;transition:.2s}.switch.on{background:#3b9b83}.switch.on:after{left:19px}.notice{border:1px solid #4a3b24;background:#2a2419;color:#eacb94;border-radius:12px;padding:12px 14px;font-size:12px;margin-bottom:16px}.notice.blue{border-color:#2e4775;background:#15233e;color:#b8caff}.activity{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid #25324a}.activity:last-child{border:0}.activity .bullet{width:8px;height:8px;border-radius:50%;background:var(--cyan);margin-top:6px;flex:none}.activity strong{font-size:12px}.activity small{display:block;color:var(--muted);font-size:11px}.score{font-weight:800;color:var(--cyan)}.actions{display:flex;gap:6px;flex-wrap:wrap}.toast{position:fixed;right:22px;bottom:22px;background:#203554;border:1px solid #45618c;color:#fff;padding:12px 16px;border-radius:11px;box-shadow:0 10px 35px #0008;z-index:20;display:none;max-width:360px}.modalback{position:fixed;inset:0;background:#050914cc;display:none;align-items:center;justify-content:center;padding:20px;z-index:10}.modal{width:min(600px,100%);max-height:90vh;overflow:auto;background:#121e33;border:1px solid var(--line);border-radius:17px;padding:20px}.modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.modalhead h3{margin:0}.close{border:0;background:transparent;color:var(--muted);font-size:22px}.progress{height:6px;background:#26334c;border-radius:9px;overflow:hidden;margin-top:10px}.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));width:0;transition:width .2s}.footer-note{font-size:11px;color:#7584a0;margin-top:16px}
+@media(max-width:1000px){.app{grid-template-columns:75px 1fr}.sidebar{padding:18px 10px}.brand{padding:4px 8px 25px}.brand div:last-child,.nav-label,.nav button span:not(.ico),.side-bottom{display:none}.nav button{justify-content:center;padding:12px 5px}.plugin-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.app{display:block}.sidebar{height:auto;position:sticky;top:0;z-index:8;padding:7px;border-right:0;border-bottom:1px solid var(--line)}.brand{display:none}.nav{display:flex;overflow:auto;gap:4px}.nav button{min-width:45px;margin:0}.nav button span:not(.ico){display:none}.topbar{height:56px;padding:0 15px}.content{padding:19px 14px}.page-head{display:block}.page-head .btn{margin-top:14px}.stats{gap:9px}.stat-value{font-size:22px}.layout2,.plugin-grid{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}.formgrid .wide{grid-column:auto}}
+</style>
 </head>
-<body class="min-h-screen bg-slate-950 text-slate-100 selection:bg-indigo-500 selection:text-white">
-  <nav class="sticky top-0 z-30 border-b border-slate-800/80 bg-slate-900/80 backdrop-blur-md">
-    <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-      <div class="flex items-center gap-2.5">
-        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-indigo-600 to-cyan-400 font-extrabold text-white shadow-lg shadow-indigo-500/20">LP</div>
-        <span class="text-lg font-bold tracking-tight">Lead<span class="text-indigo-400">Pulse</span></span>
-        <span class="ml-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-400">Free data source</span>
-      </div>
-      <div class="hidden text-xs text-slate-400 sm:block">Powered by OpenStreetMap</div>
+<body>
+<div class="app">
+<aside class="sidebar">
+ <div class="brand"><div class="logo">L</div><div><strong>LeadPulse</strong><small>AGENTIC WORKSPACE</small></div></div>
+ <nav class="nav">
+  <div class="nav-label">WORKSPACE</div>
+  <button class="active" data-page="overview"><span class="ico">◫</span><span>Overview</span></button>
+  <button data-page="discovery"><span class="ico">⌕</span><span>Lead discovery</span></button>
+  <button data-page="leads"><span class="ico">◎</span><span>Lead database</span></button>
+  <button data-page="outreach"><span class="ico">↗</span><span>Outreach centre</span></button>
+  <button data-page="crm"><span class="ico">▤</span><span>CRM pipeline</span></button>
+  <div class="nav-label">INTELLIGENCE</div>
+  <button data-page="plugins"><span class="ico">▦</span><span>Plugin hub</span></button>
+  <button data-page="settings"><span class="ico">⚙</span><span>Settings</span></button>
+ </nav>
+ <div class="side-bottom"> <span class="dot"></span> Local workspace active<br><span style="padding-left:15px">Your records stay in this browser.</span></div>
+</aside>
+<main class="main">
+ <header class="topbar"><div class="crumb">LeadPulse / <b id="crumb">Overview</b></div><div class="top-actions"><div class="status"><i class="dot"></i> Workspace ready</div><div class="avatar">LP</div></div></header>
+ <div class="content">
+  <section class="page active" id="page-overview">
+   <div class="page-head"><div><div class="eyebrow">Command centre</div><h1>Good morning. Let's find your next client.</h1><p class="sub">Discover prospects, qualify opportunities and manage outreach from one workspace.</p></div><button class="btn primary" onclick="go('discovery')">＋ Find leads</button></div>
+   <div class="grid stats">
+    <div class="card"><div class="stat-label">Saved leads</div><div class="stat-value" id="statLeads">0</div><div class="stat-foot">In your local database</div></div>
+    <div class="card"><div class="stat-label">Needs review</div><div class="stat-value" id="statReview">0</div><div class="stat-foot">New prospects to qualify</div></div>
+    <div class="card"><div class="stat-label">Draft outreach</div><div class="stat-value" id="statDrafts">0</div><div class="stat-foot">Awaiting your approval</div></div>
+    <div class="card"><div class="stat-label">Active opportunities</div><div class="stat-value" id="statActive">0</div><div class="stat-foot">Contacted or in discussion</div></div>
+   </div>
+   <div class="grid layout2">
+    <div class="card"><h3>Recent prospects</h3><div id="recentLeads" class="empty">Your discovered prospects will appear here.</div></div>
+    <div class="card"><h3>Quick actions</h3><div style="display:grid;gap:9px">
+     <button class="btn" onclick="go('discovery')">⌕ &nbsp; Discover local businesses</button>
+     <button class="btn" onclick="go('outreach')">↗ &nbsp; Review outreach drafts</button>
+     <button class="btn" onclick="go('plugins')">▦ &nbsp; Configure AI providers</button>
+     <button class="btn" onclick="exportCSV()">⇩ &nbsp; Export lead database</button>
+    </div><div class="footer-note">LeadPulse does not send messages automatically. You stay in control of every contact.</div></div>
+   </div>
+  </section>
+  <section class="page" id="page-discovery">
+   <div class="page-head"><div><div class="eyebrow">Prospecting engine</div><h1>Lead discovery</h1><p class="sub">Search OpenStreetMap for businesses in a target area and review their publicly listed details.</p></div></div>
+   <div class="notice">Data quality note: an empty website or phone field means it was not listed in the returned OpenStreetMap data. It does <b>not</b> prove the business has no website or phone number. Verify before outreach.</div>
+   <div class="card" style="margin-bottom:16px">
+    <div class="formgrid">
+     <div class="field"><label>Location / town / city</label><input id="location" placeholder="e.g. Asaba, Nigeria"></div>
+     <div class="field"><label>Business category</label><select id="category"><option value="any">Any business</option><option value="restaurant">Restaurants & cafes</option><option value="beauty">Hair & beauty</option><option value="car">Car repair & services</option><option value="health">Dentists & clinics</option><option value="retail">Shops & retail</option><option value="professional">Professional services</option><option value="fitness">Gyms & fitness</option></select></div>
+     <div class="field"><label>Search radius</label><select id="radius"><option value="3000">3 km</option><option value="5000" selected>5 km</option><option value="10000">10 km</option><option value="20000">20 km</option></select></div>
+     <div class="field"><label>Maximum results</label><select id="limit"><option>25</option><option selected>50</option><option>100</option></select></div>
     </div>
-  </nav>
-
-  <main class="mx-auto max-w-6xl px-6 py-10">
-    <header class="mx-auto mb-8 max-w-2xl text-center">
-      <h1 class="bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-3xl font-extrabold tracking-tight text-transparent sm:text-4xl">Find Local Businesses Without Websites</h1>
-      <p class="mt-2.5 text-sm text-slate-400 sm:text-base">Discover businesses, identify missing website listings, and prepare personalised outreach pitches.</p>
-    </header>
-
-    <section class="mx-auto max-w-4xl rounded-2xl border border-slate-800 bg-slate-900 p-3 shadow-2xl shadow-black/50">
-      <div class="flex flex-col gap-3 sm:flex-row">
-        <div class="flex-1">
-          <label for="niche" class="mb-1 ml-1 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Business category</label>
-          <select id="niche" class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-slate-100 transition focus:border-indigo-500 focus:outline-none">
-            <option value="plumber">🔧 Plumbers</option>
-            <option value="electrician">⚡ Electricians</option>
-            <option value="hairdresser">💇 Hair salons & barbers</option>
-            <option value="car_repair">🚗 Auto repair shops</option>
-            <option value="restaurant">🍽️ Restaurants</option>
-            <option value="cafe">☕ Cafes</option>
-            <option value="dentist">🦷 Dentists</option>
-            <option value="clinic">🏥 Clinics</option>
-            <option value="bakery">🥐 Bakeries</option>
-            <option value="gym">🏋️ Gyms & fitness centres</option>
-          </select>
-        </div>
-        <div class="flex-1">
-          <label for="city" class="mb-1 ml-1 block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Target city</label>
-          <input id="city" type="text" value="Asaba, Nigeria" placeholder="e.g. Asaba, Nigeria" class="w-full rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-slate-100 transition focus:border-indigo-500 focus:outline-none">
-        </div>
-        <div class="flex items-end">
-          <button id="scanBtn" type="button" onclick="scanOSM()" class="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/25 transition hover:bg-indigo-500 active:scale-[0.99] sm:w-auto">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35M17 11a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z"/></svg>
-            <span id="btnText">Scan city</span>
-          </button>
-        </div>
-      </div>
-      <p class="mt-2 px-1 text-xs text-slate-500">OpenStreetMap coverage varies. “No website listed” means no website was found in the map data; it does not prove the business has no website.</p>
-    </section>
-
-    <section id="statsRow" class="mx-auto mt-8 hidden max-w-4xl grid-cols-1 gap-4 sm:grid-cols-3">
-      <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-5"><p class="text-xs font-medium uppercase tracking-wider text-slate-400">Businesses scanned</p><p id="statTotal" class="mt-1 text-2xl font-extrabold text-white">0</p></div>
-      <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-5"><p class="text-xs font-medium uppercase tracking-wider text-slate-400">No website listed</p><p id="statNoWeb" class="mt-1 text-2xl font-extrabold text-rose-400">0</p></div>
-      <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-5"><p class="text-xs font-medium uppercase tracking-wider text-slate-400">Average gap score</p><p id="statAvgScore" class="mt-1 text-2xl font-extrabold text-amber-400">0/100</p></div>
-    </section>
-
-    <section id="toolbar" class="mx-auto mt-8 hidden max-w-4xl flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
-      <label class="flex cursor-pointer select-none items-center gap-2.5 text-sm font-medium text-slate-300">
-        <input id="noWebOnly" type="checkbox" checked onchange="renderLeads()" class="h-4 w-4 cursor-pointer accent-indigo-600">
-        Show only businesses <span class="font-semibold text-rose-400">with no website listed</span>
-      </label>
-      <button type="button" onclick="downloadCSV()" class="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-200 transition hover:bg-slate-700">
-        <svg class="h-4 w-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-1m-4-4-4 4m0 0-4-4m4 4V4"/></svg>
-        Export leads (.CSV)
-      </button>
-    </section>
-
-    <section id="emptyState" class="mx-auto mt-12 max-w-4xl rounded-2xl border border-dashed border-slate-800 bg-slate-900/30 px-6 py-14 text-center">
-      <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-800 text-indigo-400">
-        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m17.657 16.657-4.243 4.243a1.998 1.998 0 0 1-2.827 0l-4.244-4.243a8 8 0 1 1 11.314 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
-      </div>
-      <h2 class="text-base font-semibold text-slate-200">Ready to scan your target market</h2>
-      <p class="mx-auto mt-1 max-w-md text-sm text-slate-400">Choose a business category, enter a city, and click Scan city.</p>
-    </section>
-
-    <section id="results" class="mx-auto mt-6 max-w-4xl space-y-3.5" aria-live="polite"></section>
-  </main>
-
-  <div id="pitchModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
-      <div class="mb-4 flex items-center justify-between">
-        <h2 id="modalTitle" class="text-lg font-bold text-white">Outreach pitch</h2>
-        <button type="button" onclick="closeModal()" class="text-xl leading-none text-slate-400 hover:text-white" aria-label="Close">&times;</button>
-      </div>
-      <textarea id="pitchText" rows="8" class="w-full rounded-xl border border-slate-800 bg-slate-950 p-3.5 text-sm text-slate-200 focus:outline-none"></textarea>
-      <div class="mt-4 flex justify-end gap-2.5">
-        <button type="button" onclick="closeModal()" class="rounded-xl px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white">Close</button>
-        <button type="button" onclick="copyPitch()" id="copyBtn" class="rounded-xl bg-indigo-600 px-5 py-2 text-xs font-semibold text-white transition hover:bg-indigo-500">Copy message</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    "use strict";
-
-    let allLeads = [];
-
-    const CATEGORY_TAGS = {
-      plumber: ['craft', 'plumber'],
-      electrician: ['craft', 'electrician'],
-      hairdresser: ['shop', 'hairdresser'],
-      car_repair: ['shop', 'car_repair'],
-      restaurant: ['amenity', 'restaurant'],
-      cafe: ['amenity', 'cafe'],
-      dentist: ['amenity', 'dentist'],
-      clinic: ['amenity', 'clinic'],
-      bakery: ['shop', 'bakery'],
-      gym: ['leisure', 'fitness_centre']
-    };
-
-    function escapeHtml(value) {
-      return String(value ?? '').replace(/[&<>"']/g, (char) => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-      })[char]);
-    }
-
-    function safeWebsiteUrl(value) {
-      if (!value) return '';
-      let candidate = String(value).trim();
-      if (!/^https?:\/\//i.test(candidate)) candidate = `https://${candidate}`;
-      try {
-        const parsed = new URL(candidate);
-        return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : '';
-      } catch {
-        return '';
-      }
-    }
-
-    async function scanOSM() {
-      const niche = document.getElementById('niche').value;
-      const city = document.getElementById('city').value.trim();
-      const btn = document.getElementById('scanBtn');
-      const btnText = document.getElementById('btnText');
-
-      if (!city) {
-        alert('Please enter a city name.');
-        return;
-      }
-
-      btn.disabled = true;
-      btn.classList.add('opacity-70');
-      btnText.textContent = 'Finding city...';
-
-      try {
-        const geocodeUrl = new URL('https://nominatim.openstreetmap.org/search');
-        geocodeUrl.search = new URLSearchParams({ q: city, format: 'jsonv2', limit: '1' });
-        const geoResponse = await fetch(geocodeUrl, {
-          headers: { 'Accept': 'application/json' }
-        });
-        if (!geoResponse.ok) throw new Error(`City lookup failed (${geoResponse.status}).`);
-        const places = await geoResponse.json();
-        if (!places.length) throw new Error('City not found. Try adding the country name.');
-
-        const bounds = places[0].boundingbox.map(Number);
-        const south = bounds[0];
-        const north = bounds[1];
-        const west = bounds[2];
-        const east = bounds[3];
-        const [tagKey, tagValue] = CATEGORY_TAGS[niche];
-
-        btnText.textContent = 'Scanning map...';
-        const query = `
-          [out:json][timeout:45];
-          (
-            node["${tagKey}"="${tagValue}"](${south},${west},${north},${east});
-            way["${tagKey}"="${tagValue}"](${south},${west},${north},${east});
-            relation["${tagKey}"="${tagValue}"](${south},${west},${north},${east});
-          );
-          out center 100;
-        `;
-
-        const response = await fetch('https://overpass-api.de/api/interpreter', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-          body: new URLSearchParams({ data: query })
-        });
-        if (!response.ok) throw new Error(`Map search failed (${response.status}). Please try again shortly.`);
-        const data = await response.json();
-
-        allLeads = (data.elements || [])
-          .filter((element) => element.tags && element.tags.name)
-          .map((element) => {
-            const tags = element.tags;
-            const website = tags.website || tags['contact:website'] || '';
-            const phone = tags.phone || tags['contact:phone'] || '';
-            const street = tags['addr:street']
-              ? `${tags['addr:housenumber'] || ''} ${tags['addr:street']}`.trim()
-              : (tags['addr:full'] || city);
-            const gaps = [];
-            let score = 0;
-
-            if (!website) { score += 50; gaps.push('No website listed'); }
-            if (!phone) { score += 25; gaps.push('No phone listed'); }
-            if (!tags.opening_hours) { score += 25; gaps.push('Opening hours not listed'); }
-
-            return {
-              id: `${element.type}/${element.id}`,
-              name: tags.name,
-              city,
-              niche,
-              address: street,
-              phone: phone || 'Not listed',
-              website,
-              score: Math.min(score, 100),
-              gaps
-            };
-          })
-          .sort((a, b) => b.score - a.score);
-
-        document.getElementById('emptyState').classList.add('hidden');
-        document.getElementById('statsRow').classList.remove('hidden');
-        document.getElementById('statsRow').classList.add('grid');
-        document.getElementById('toolbar').classList.remove('hidden');
-        updateStats();
-        renderLeads();
-      } catch (error) {
-        console.error(error);
-        alert(error.message || 'The OpenStreetMap services are temporarily unavailable. Please try again later.');
-      } finally {
-        btn.disabled = false;
-        btn.classList.remove('opacity-70');
-        btnText.textContent = 'Scan city';
-      }
-    }
-
-    function updateStats() {
-      const noWebsiteCount = allLeads.filter((lead) => !lead.website).length;
-      const averageScore = allLeads.length
-        ? Math.round(allLeads.reduce((sum, lead) => sum + lead.score, 0) / allLeads.length)
-        : 0;
-
-      document.getElementById('statTotal').textContent = allLeads.length;
-      document.getElementById('statNoWeb').textContent = noWebsiteCount;
-      document.getElementById('statAvgScore').textContent = `${averageScore}/100`;
-    }
-
-    function getFilteredLeads() {
-      const noWebOnly = document.getElementById('noWebOnly').checked;
-      return noWebOnly ? allLeads.filter((lead) => !lead.website) : allLeads;
-    }
-
-    function renderLeads() {
-      const container = document.getElementById('results');
-      const filtered = getFilteredLeads();
-
-      if (!filtered.length) {
-        container.innerHTML = '<div class="py-10 text-center text-sm text-slate-400">No businesses matched this filter. Try another category or city.</div>';
-        return;
-      }
-
-      container.innerHTML = filtered.map((lead, index) => {
-        const badgeColor = lead.score >= 75
-          ? 'border-rose-500/30 bg-rose-500/15 text-rose-400'
-          : 'border-amber-500/30 bg-amber-500/15 text-amber-400';
-        const websiteUrl = safeWebsiteUrl(lead.website);
-        const websiteLink = websiteUrl
-          ? `<a href="${escapeHtml(websiteUrl)}" target="_blank" rel="noopener noreferrer" class="text-xs text-cyan-400 hover:underline">Visit listed site ↗</a>`
-          : '<span class="text-xs text-rose-400">No website listed</span>';
-
-        return `
-          <article class="flex flex-col justify-between gap-4 rounded-2xl border border-slate-800/90 bg-slate-900 p-5 transition hover:border-slate-700 sm:flex-row sm:items-center">
-            <div class="space-y-2">
-              <div class="flex flex-wrap items-center gap-2.5">
-                <h2 class="text-base font-bold text-white">${escapeHtml(lead.name)}</h2>
-                <span class="rounded-full border px-2.5 py-0.5 text-xs font-bold ${badgeColor}">Gap score: ${lead.score}/100</span>
-              </div>
-              <p class="text-sm text-slate-400">📍 ${escapeHtml(lead.address)} <span class="px-1">•</span> 📞 ${escapeHtml(lead.phone)}</p>
-              <div class="flex flex-wrap gap-1.5">
-                ${lead.gaps.map((gap) => `<span class="rounded-md border border-slate-700/70 bg-slate-800 px-2.5 py-0.5 text-[11px] font-medium text-slate-300">${escapeHtml(gap)}</span>`).join('')}
-              </div>
-              ${websiteLink}
-            </div>
-            <button type="button" onclick="openPitch(${index})" class="shrink-0 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-indigo-500">Generate pitch</button>
-          </article>
-        `;
-      }).join('');
-    }
-
-    function openPitch(index) {
-      const lead = getFilteredLeads()[index];
-      if (!lead) return;
-
-      document.getElementById('modalTitle').textContent = `Pitch for ${lead.name}`;
-      document.getElementById('pitchText').value =
-`Hi ${lead.name} team,
-
-I came across your ${lead.niche.replace('_', ' ')} business in ${lead.city}. I couldn't find a website listed on the business directory I checked, so I wanted to ask whether you already have one.
-
-A clear, mobile-friendly website can help customers learn about your services and contact you more easily. I build websites for local businesses and would be happy to show you a simple idea for yours.
-
-Would you be open to seeing a sample?
-
-Best,
-[Your Name]`;
-
-      const modal = document.getElementById('pitchModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-
-    function closeModal() {
-      const modal = document.getElementById('pitchModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    async function copyPitch() {
-      const pitch = document.getElementById('pitchText');
-      const button = document.getElementById('copyBtn');
-      try {
-        await navigator.clipboard.writeText(pitch.value);
-      } catch {
-        pitch.focus();
-        pitch.select();
-        const copied = document.execCommand('copy');
-        if (!copied) {
-          alert('Copy failed. Please select and copy the message manually.');
-          return;
-        }
-      }
-      button.textContent = 'Copied!';
-      window.setTimeout(() => { button.textContent = 'Copy message'; }, 1500);
-    }
-
-    function csvCell(value) {
-      return `"${String(value ?? '').replace(/"/g, '""')}"`;
-    }
-
-    function downloadCSV() {
-      const filtered = getFilteredLeads();
-      const rows = [
-        ['Name', 'Category', 'City', 'Phone', 'Address', 'Website', 'Gap Score', 'Missing Items'],
-        ...filtered.map((lead) => [
-          lead.name, lead.niche, lead.city, lead.phone, lead.address,
-          lead.website, lead.score, lead.gaps.join('; ')
-        ])
-      ];
-      const csv = rows.map((row) => row.map(csvCell).join(',')).join('\r\n');
-      const blob = new Blob(['\uFEFF', csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'leadpulse-leads.csv';
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') closeModal();
-    });
-  </script>
+    <div style="display:flex;gap:10px;align-items:center;margin-top:15px;flex-wrap:wrap"><button class="btn primary" id="scanBtn" onclick="discover()">⌕ Search businesses</button><span class="muted smalltext" id="scanStatus">Uses public Nominatim and Overpass services.</span></div>
+    <div class="progress" id="scanProgress" style="display:none"><span id="progressBar"></span></div>
+   </div>
+   <div class="card"><div class="toolbar"><strong>Discovery results</strong><span class="pill blue" id="resultCount">0 found</span><input class="searchbox" id="discoveryFilter" placeholder="Filter results..." oninput="renderDiscovery()"></div><div id="discoveryResults" class="empty">Enter a location and start a search.</div></div>
+  </section>
+  <section class="page" id="page-leads">
+   <div class="page-head"><div><div class="eyebrow">Prospect library</div><h1>Lead database</h1><p class="sub">Your saved prospects, verification notes and opportunity status.</p></div><button class="btn" onclick="exportCSV()">⇩ Export CSV</button></div>
+   <div class="card"><div class="toolbar"><input class="searchbox" id="leadFilter" placeholder="Search name, area or category..." oninput="renderLeads()"><select id="stageFilter" class="searchbox" style="max-width:170px" onchange="renderLeads()"><option value="">All stages</option><option>New</option><option>Researching</option><option>Qualified</option><option>Contacted</option><option>Replied</option><option>Meeting</option><option>Won</option><option>Lost</option></select></div><div id="leadTable"></div></div>
+  </section>
+  <section class="page" id="page-outreach">
+   <div class="page-head"><div><div class="eyebrow">Human-approved communication</div><h1>Outreach centre</h1><p class="sub">Create tailored drafts, review them and decide when and how to send.</p></div></div>
+   <div class="notice blue">Sending is intentionally not enabled in this HTML-only version. Email, WhatsApp and social messaging require authorised provider integrations in the backend. Drafts are saved here for review; nothing is sent.</div>
+   <div class="grid layout2">
+    <div class="card"><h3>Create outreach draft</h3><div class="formgrid">
+     <div class="field wide"><label>Choose a saved lead</label><select id="draftLead"></select></div>
+     <div class="field"><label>Your service</label><select id="service"><option>Website design</option><option>Graphic design</option><option>Video editing</option><option>SEO services</option><option>Social media management</option><option>Copywriting</option><option>Virtual assistance</option><option>Custom service</option></select></div>
+     <div class="field"><label>Channel</label><select id="channel"><option>Email</option><option>WhatsApp (manual handoff)</option><option>Phone call</option><option>Instagram (manual handoff)</option><option>LinkedIn (manual handoff)</option></select></div>
+     <div class="field wide"><label>Personalisation / verified observation</label><textarea id="observation" placeholder="Add a real observation you verified about this business. Avoid assuming missing information."></textarea></div>
+     <div class="field wide"><label>Draft message</label><textarea id="draftBody" placeholder="Select a lead and generate a draft, or write your own..." style="min-height:180px"></textarea></div>
+    </div><div class="actions" style="margin-top:12px"><button class="btn" onclick="generateDraft()">✦ Create draft</button><button class="btn primary" onclick="saveDraft()">Save for approval</button></div></div>
+    <div class="card"><h3>Approval queue</h3><div id="draftList" class="empty">No drafts yet. Create one to get started.</div></div>
+   </div>
+  </section>
+  <section class="page" id="page-crm">
+   <div class="page-head"><div><div class="eyebrow">Relationship management</div><h1>CRM pipeline</h1><p class="sub">Track every opportunity from discovery to closed deal.</p></div></div>
+   <div class="card"><div class="toolbar"><span class="muted smalltext">Update a lead's stage from the lead database.</span><button class="btn small" onclick="go('leads')">Open lead database</button></div><div id="pipeline"></div></div>
+  </section>
+  <section class="page" id="page-plugins">
+   <div class="page-head"><div><div class="eyebrow">Extensible intelligence</div><h1>Plugin hub</h1><p class="sub">The planned provider and service integrations for LeadPulse Agentic.</p></div></div>
+   <div class="notice">This page is the plugin registry and configuration front-end. Real AI calls and secure credentials will be connected through the backend in the next build stage. Do not paste API keys into this HTML or publish them in GitHub.</div>
+   <div class="grid plugin-grid" id="pluginGrid"></div>
+  </section>
+  <section class="page" id="page-settings">
+   <div class="page-head"><div><div class="eyebrow">Workspace configuration</div><h1>Settings</h1><p class="sub">Manage your local workspace and data.</p></div></div>
+   <div class="grid layout2">
+    <div class="card"><h3>Workspace preferences</h3><div class="formgrid"><div class="field wide"><label>Freelancer / agency name</label><input id="agencyName" placeholder="Your business name"></div><div class="field wide"><label>Primary service</label><input id="primaryService" placeholder="e.g. Website design and development"></div><div class="field wide"><label>Target customer profile</label><textarea id="targetProfile" placeholder="Describe the clients you want to work with..."></textarea></div></div><button class="btn primary" style="margin-top:12px" onclick="saveSettings()">Save preferences</button></div>
+    <div class="card"><h3>Data & privacy</h3><p class="muted smalltext">LeadPulse stores saved leads, drafts, plugin preferences and workspace settings in this browser's local storage. Clearing browser data may erase them. Export your leads regularly.</p><div class="actions"><button class="btn" onclick="exportCSV()">Export leads CSV</button><button class="btn danger" onclick="clearData()">Clear local workspace</button></div><p class="footer-note">External discovery requests are sent to public OpenStreetMap services. Avoid collecting or storing sensitive personal information.</p></div>
+   </div>
+  </section>
+ </div>
+</main>
+</div>
+<div class="modalback" id="leadModal"><div class="modal"><div class="modalhead"><h3>Lead details & verification</h3><button class="close" onclick="closeModal()">×</button></div><div id="leadModalBody"></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const STORE='leadpulse_agentic_v1';
+const categories={
+ any:['amenity','shop','office','craft','leisure','tourism'],
+ restaurant:['amenity=restaurant','amenity=cafe','amenity=fast_food','amenity=bar'],
+ beauty:['shop=hairdresser','shop=beauty','amenity=beauty'],
+ car:['shop=car_repair','shop=tyres','shop=car'],
+ health:['amenity=clinic','amenity=dentist','amenity=doctors','healthcare'],
+ retail:['shop'],
+ professional:['office=company','office=lawyer','office=accountant','office=estate_agent'],
+ fitness:['leisure=fitness_centre','leisure=sports_centre']
+};
+const pluginDefs=[
+ ['🧠','OpenAI','Central reasoning and language model provider','AI provider','Backend connection required'],
+ ['🔌','AI APIs','Connect supported AI services through secure provider APIs.','AI APIs','Backend connection required'],
+ ['🤖','Anthropic Claude','Reasoning and long-context analysis provider','AI provider','Backend connection required'],
+ ['🔎','OpenStreetMap','Public business and place discovery data','Research','Enabled in discovery'],
+ ['🌐','Web research','Verify business details and gather public evidence','Research','Backend search adapter required'],
+ ['✉️','Email provider','Send approved email through an authorised account','Outreach','Backend + account authorisation required'],
+ ['📇','CRM engine','Lead records, stages, notes and follow-up tracking','Workspace','Local CRM active'],
+ ['📱','Android companion','Permission-based phone handoff and action control','Device','Next development stage']
+];
+let state=loadState(),found=[];
+function loadState(){try{return JSON.parse(localStorage.getItem(STORE))||{leads:[],drafts:[],plugins:{},settings:{}}}catch(e){return{leads:[],drafts:[],plugins:{},settings:{}}}}
+function persist(){localStorage.setItem(STORE,JSON.stringify(state));updateStats()}
+function toast(msg){let t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(window._toast);window._toast=setTimeout(()=>t.style.display='none',3200)}
+function go(page){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+page).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));document.getElementById('crumb').textContent=({overview:'Overview',discovery:'Lead discovery',leads:'Lead database',outreach:'Outreach centre',crm:'CRM pipeline',plugins:'Plugin hub',settings:'Settings'})[page];if(page==='leads')renderLeads();if(page==='outreach'){refreshDraftLead();renderDrafts()}if(page==='crm')renderPipeline();if(page==='overview')renderOverview();window.scrollTo(0,0)}
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
+function updateStats(){document.getElementById('statLeads').textContent=state.leads.length;document.getElementById('statReview').textContent=state.leads.filter(x=>x.stage==='New'||!x.stage).length;document.getElementById('statDrafts').textContent=state.drafts.filter(x=>x.status==='Pending approval').length;document.getElementById('statActive').textContent=state.leads.filter(x=>['Contacted','Replied','Meeting'].includes(x.stage)).length}
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function scoreLead(x){let s=30;if(!x.website)s+=20;if(!x.phone)s+=8;if(!x.hours)s+=6;if(!x.email)s+=6;if(x.address)s+=5;return Math.min(95,s)}
+function renderOverview(){updateStats();let el=document.getElementById('recentLeads');let rows=state.leads.slice(-5).reverse();el.innerHTML=rows.length?rows.map(x=>`<div class="activity"><i class="bullet"></i><div style="flex:1"><strong>${esc(x.name)}</strong><small>${esc(x.category||'Business')} · ${esc(x.area||'')}</small></div><span class="pill">${esc(x.stage||'New')}</span></div>`).join(''):'<div class="empty">Your discovered prospects will appear here.</div>'}
+async function discover(){
+ const loc=document.getElementById('location').value.trim();if(!loc){toast('Enter a town or city first.');return}
+ const btn=document.getElementById('scanBtn'),status=document.getElementById('scanStatus'),prog=document.getElementById('scanProgress'),bar=document.getElementById('progressBar');
+ btn.disabled=true;btn.textContent='Searching…';status.textContent='Finding the location…';prog.style.display='block';bar.style.width='15%';found=[];
+ try{
+  const geo=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+encodeURIComponent(loc),{headers:{'Accept':'application/json'}});if(!geo.ok)throw new Error('Location service returned '+geo.status);const places=await geo.json();if(!places.length)throw new Error('Could not find that location. Try a larger town or city.');
+  const p=places[0],lat=+p.lat,lon=+p.lon,r=+document.getElementById('radius').value;status.textContent='Searching public business records…';bar.style.width='45%';
+  let selectors=categories[document.getElementById('category').value]||categories.any;
+  let clauses=selectors.map(v=>{if(v.includes('=')){let [k,val]=v.split('=');return `node(around:${r},${lat},${lon})[${k}="${val}"];way(around:${r},${lat},${lon})[${k}="${val}"];relation(around:${r},${lat},${lon})[${k}="${val}"];`}return `node(around:${r},${lat},${lon})[${v}];way(around:${r},${lat},${lon})[${v}];relation(around:${r},${lat},${lon})[${v}];`}).join('');
+  const query=`[out:json][timeout:35];(${clauses});out center tags ${document.getElementById('limit').value};`;
+  let response;
+  for(const endpoint of ['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter']){try{response=await fetch(endpoint,{method:'POST',body:query,headers:{'Content-Type':'text/plain'}});if(response.ok)break}catch(e){}}
+  if(!response||!response.ok)throw new Error('Business search is temporarily unavailable. Please retry in a moment.');
+  const data=await response.json();bar.style.width='85%';
+  found=(data.elements||[]).map(e=>{let t=e.tags||{},center=e.center||e;return{id:'osm-'+e.type+'-'+e.id,name:t.name||t['name:en']||'',category:t.amenity||t.shop||t.office||t.craft||t.leisure||t.tourism||'Business',address:[t['addr:housenumber'],t['addr:street'],t['addr:suburb'],t['addr:city']].filter(Boolean).join(', '),area:p.display_name.split(',').slice(0,2).join(',').trim(),lat:center.lat,lon:center.lon,website:t.website||t['contact:website']||'',phone:t.phone||t['contact:phone']||'',email:t.email||t['contact:email']||'',hours:t.opening_hours||'',source:'OpenStreetMap',stage:'New',notes:'',verified:{website:false,phone:false,need:false},created:new Date().toISOString()}}).filter(x=>x.name);
+  found=found.slice(0,+document.getElementById('limit').value);renderDiscovery();bar.style.width='100%';status.textContent=`Found ${found.length} named businesses near ${loc}.`;toast(`Discovery complete: ${found.length} businesses found.`);
+ }catch(err){status.textContent=err.message;document.getElementById('discoveryResults').innerHTML=`<div class="empty">${esc(err.message)}<br><span class="smalltext">Public services can rate-limit requests. Try again later or use a broader location.</span></div>`}
+ finally{btn.disabled=false;btn.textContent='⌕ Search businesses';setTimeout(()=>prog.style.display='none',700)}
+}
+function renderDiscovery(){let q=(document.getElementById('discoveryFilter').value||'').toLowerCase(),list=found.filter(x=>(x.name+' '+x.category+' '+x.address).toLowerCase().includes(q));document.getElementById('resultCount').textContent=list.length+' found';let el=document.getElementById('discoveryResults');if(!list.length){el.className='empty';el.textContent='No matching businesses in this result set.';return}el.className='tablewrap';el.innerHTML=`<table><thead><tr><th>Business</th><th>Category / area</th><th>Public listing</th><th>Opportunity signal*</th><th></th></tr></thead><tbody>${list.map(x=>{let saved=state.leads.some(y=>y.id===x.id);return `<tr><td><strong>${esc(x.name)}</strong><div class="muted">${esc(x.address||'Address not listed')}</div></td><td>${esc(x.category)}<div class="muted">${esc(x.area)}</div></td><td>${x.website?'Website listed':'No website listed'}<br>${x.phone?'Phone listed':'No phone listed'}</td><td><span class="score">${scoreLead(x)}/100</span></td><td><button class="btn small ${saved?'':'primary'}" ${saved?'disabled':''} onclick="saveLead('${esc(x.id)}')">${saved?'Saved':'＋ Save lead'}</button></td></tr>`}).join('')}</tbody></table><div class="footer-note">*Heuristic prioritisation based on fields present in OpenStreetMap, not a verified business-quality score.</div>`}
+function saveLead(id){let x=found.find(y=>y.id===id);if(!x)return;if(state.leads.some(y=>y.id===id)){toast('Already saved.');return}x.score=scoreLead(x);state.leads.push(x);persist();renderDiscovery();renderOverview();toast('Lead saved to your database.')}
+function renderLeads(){let q=(document.getElementById('leadFilter').value||'').toLowerCase(),stage=document.getElementById('stageFilter').value;let list=state.leads.filter(x=>(x.name+' '+x.category+' '+x.area).toLowerCase().includes(q)&&(!stage||x.stage===stage));let el=document.getElementById('leadTable');if(!list.length){el.innerHTML='<div class="empty">No leads match. Discover and save prospects to populate your database.</div>';return}el.innerHTML=`<div class="tablewrap"><table><thead><tr><th>Business</th><th>Contact information</th><th>Stage</th><th>Score</th><th>Actions</th></tr></thead><tbody>${list.map(x=>`<tr><td><strong>${esc(x.name)}</strong><div class="muted">${esc(x.category)} · ${esc(x.area)}</div></td><td>${x.website?`<a target="_blank" rel="noopener" href="${esc(x.website.startsWith('http')?x.website:'https://'+x.website)}">Website</a>`:'Website not listed'}<div class="muted">${esc(x.phone||'Phone not listed')}</div></td><td><select onchange="setStage('${esc(x.id)}',this.value)" class="searchbox" style="padding:6px;min-width:115px">${['New','Researching','Qualified','Contacted','Replied','Meeting','Won','Lost'].map(s=>`<option ${x.stage===s?'selected':''}>${s}</option>`).join('')}</select></td><td><span class="score">${x.score||scoreLead(x)}</span></td><td><div class="actions"><button class="btn small" onclick="editLead('${esc(x.id)}')">Details</button><button class="btn small" onclick="startDraft('${esc(x.id)}')">Draft</button></div></td></tr>`).join('')}</tbody></table></div>`}
+function setStage(id,s){let x=state.leads.find(y=>y.id===id);if(x){x.stage=s;persist();renderLeads();renderPipeline();toast('Lead stage updated.')}}
+function editLead(id){let x=state.leads.find(y=>y.id===id);if(!x)return;document.getElementById('leadModalBody').innerHTML=`<div class="formgrid"><div class="field wide"><label>Business</label><input id="mName" value="${esc(x.name)}"></div><div class="field"><label>Website</label><input id="mWebsite" value="${esc(x.website)}"></div><div class="field"><label>Phone</label><input id="mPhone" value="${esc(x.phone)}"></div><div class="field"><label>Email</label><input id="mEmail" value="${esc(x.email)}"></div><div class="field"><label>Stage</label><select id="mStage">${['New','Researching','Qualified','Contacted','Replied','Meeting','Won','Lost'].map(s=>`<option ${x.stage===s?'selected':''}>${s}</option>`).join('')}</select></div><div class="field wide"><label>Verification notes</label><textarea id="mNotes">${esc(x.notes||'')}</textarea></div><div class="field wide"><label>Verification checklist</label><label><input type="checkbox" id="mVweb" ${x.verified?.website?'checked':''} style="width:auto"> Website checked</label><label><input type="checkbox" id="mVphone" ${x.verified?.phone?'checked':''} style="width:auto"> Phone checked</label><label><input type="checkbox" id="mVneed" ${x.verified?.need?'checked':''} style="width:auto"> Business need / opportunity verified</label></div></div><div class="actions" style="margin-top:15px"><button class="btn primary" onclick="saveLeadEdits('${esc(id)}')">Save details</button><button class="btn danger" onclick="deleteLead('${esc(id)}')">Delete lead</button></div>`;document.getElementById('leadModal').style.display='flex'}
+function saveLeadEdits(id){let x=state.leads.find(y=>y.id===id);if(!x)return;Object.assign(x,{name:document.getElementById('mName').value,website:document.getElementById('mWebsite').value,phone:document.getElementById('mPhone').value,email:document.getElementById('mEmail').value,stage:document.getElementById('mStage').value,notes:document.getElementById('mNotes').value,verified:{website:document.getElementById('mVweb').checked,phone:document.getElementById('mVphone').checked,need:document.getElementById('mVneed').checked}});persist();closeModal();renderLeads();renderPipeline();toast('Lead details saved.')}
+function deleteLead(id){if(!confirm('Delete this lead and its local record?'))return;state.leads=state.leads.filter(x=>x.id!==id);persist();closeModal();renderLeads();renderPipeline();toast('Lead deleted.')}
+function closeModal(){document.getElementById('leadModal').style.display='none'}
+function startDraft(id){go('outreach');refreshDraftLead();document.getElementById('draftLead').value=id;generateDraft()}
+function refreshDraftLead(){let s=document.getElementById('draftLead'),old=s.value;s.innerHTML='<option value="">Select a saved lead</option>'+state.leads.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join('');if(state.leads.some(x=>x.id===old))s.value=old}
+function generateDraft(){let id=document.getElementById('draftLead').value,x=state.leads.find(y=>y.id===id);if(!x){toast('Save or select a lead first.');return}let service=document.getElementById('service').value,obs=document.getElementById('observation').value.trim();let agency=state.settings.agencyName||'I';let body=`Hello ${x.name},\n\nI’m ${agency}, and I help businesses with ${service.toLowerCase()}.\n\n${obs?`I noticed: ${obs}\n\n`:'I came across your business and wanted to introduce my services in case they could be useful to your team.\n\n'}Would you be open to a brief conversation about what you’re currently working on and whether I could help?\n\nBest,\n${agency}`;document.getElementById('draftBody').value=body;toast('Draft generated. Review and personalise it before saving.')}
+function saveDraft(){let id=document.getElementById('draftLead').value,x=state.leads.find(y=>y.id===id),body=document.getElementById('draftBody').value.trim();if(!x||!body){toast('Choose a lead and write a message first.');return}state.drafts.push({id:'draft-'+Date.now(),leadId:id,leadName:x.name,channel:document.getElementById('channel').value,service:document.getElementById('service').value,body,status:'Pending approval',created:new Date().toISOString()});persist();renderDrafts();toast('Saved to approval queue. Nothing has been sent.')}
+function renderDrafts(){let el=document.getElementById('draftList');if(!state.drafts.length){el.className='empty';el.textContent='No drafts yet. Create one to get started.';return}el.className='';el.innerHTML=state.drafts.slice().reverse().map(d=>`<div class="card" style="padding:13px;margin-bottom:10px;background:#101a2d"><div style="display:flex;justify-content:space-between;gap:8px"><strong>${esc(d.leadName)}</strong><span class="pill amber">${esc(d.status)}</span></div><div class="muted smalltext">${esc(d.channel)} · ${esc(d.service)}</div><p class="smalltext" style="white-space:pre-wrap;color:#c7d2e8">${esc(d.body)}</p><div class="actions"><button class="btn small" onclick="copyDraft('${esc(d.id)}')">Copy</button><button class="btn small" onclick="approveDraft('${esc(d.id)}')">Mark reviewed</button><button class="btn small danger" onclick="removeDraft('${esc(d.id)}')">Delete</button></div></div>`).join('')}
+function copyDraft(id){let d=state.drafts.find(x=>x.id===id);if(d)navigator.clipboard?.writeText(d.body).then(()=>toast('Draft copied.')).catch(()=>toast('Clipboard access unavailable.'))}
+function approveDraft(id){let d=state.drafts.find(x=>x.id===id);if(d){d.status='Reviewed by user';persist();renderDrafts();toast('Marked as reviewed. No message was sent.')}}function removeDraft(id){state.drafts=state.drafts.filter(x=>x.id!==id);persist();renderDrafts()}
+function renderPipeline(){let stages=['New','Researching','Qualified','Contacted','Replied','Meeting','Won','Lost'];document.getElementById('pipeline').innerHTML=`<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px">${stages.map(s=>{let a=state.leads.filter(x=>x.stage===s);return `<div class="card" style="padding:13px"><div class="muted smalltext">${s}</div><div class="stat-value">${a.length}</div><div class="smalltext">${a.slice(0,3).map(x=>esc(x.name)).join('<br>')||'<span class="muted">No leads</span>'}</div></div>`}).join('')}</div>`}
+function renderPlugins(){document.getElementById('pluginGrid').innerHTML=pluginDefs.map((p,i)=>{let enabled=state.plugins[i]??(i===4||i===8);return `<div class="card plugin"><div class="plugin-top"><div class="plugin-icon">${p[0]}</div><span class="pill ${enabled?'green':'amber'}">${enabled?'Enabled':'Not connected'}</span></div><div><strong>${p[1]}</strong><div class="muted smalltext">${p[3]}</div></div><p>${p[2]}</p><div class="plugin-foot"><span class="muted smalltext">${p[4]}</span><button class="switch ${enabled?'on':''}" aria-label="Toggle ${p[1]}" onclick="togglePlugin(${i})"></button></div></div>`}).join('')}
+function togglePlugin(i){state.plugins[i]=!(state.plugins[i]??(i===4||i===8));persist();renderPlugins();toast('Plugin preference updated. A backend connection may still be required.')}
+function saveSettings(){state.settings={agencyName:document.getElementById('agencyName').value,primaryService:document.getElementById('primaryService').value,targetProfile:document.getElementById('targetProfile').value};persist();toast('Workspace preferences saved.')}
+function exportCSV(){let rows=[['Business','Category','Area','Address','Website','Phone','Email','Opening hours','Stage','Score','Verification notes']];state.leads.forEach(x=>rows.push([x.name,x.category,x.area,x.address,x.website,x.phone,x.email,x.hours,x.stage,x.score,x.notes]));let csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='leadpulse-leads.csv';a.click();URL.revokeObjectURL(a.href);toast('CSV export prepared.')}
+function clearData(){if(!confirm('This permanently clears leads, drafts, settings and plugin preferences stored in this browser. Continue?'))return;localStorage.removeItem(STORE);state=loadState();found=[];renderOverview();renderLeads();renderDrafts();renderPlugins();renderPipeline();toast('Local workspace cleared.')}
+function init(){renderOverview();renderLeads();renderDrafts();renderPlugins();renderPipeline();let s=state.settings||{};document.getElementById('agencyName').value=s.agencyName||'';document.getElementById('primaryService').value=s.primaryService||'';document.getElementById('targetProfile').value=s.targetProfile||'';refreshDraftLead()}
+init();
+</script>
 </body>
 </html>
