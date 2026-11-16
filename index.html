@@ -77,7 +77,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.app{display:gri
   </section>
   <section class="page" id="page-outreach">
    <div class="page-head"><div><div class="eyebrow">Human-approved communication</div><h1>Outreach centre</h1><p class="sub">Create tailored drafts, review them and decide when and how to send.</p></div></div>
-   <div class="notice blue">Sending is intentionally not enabled in this HTML-only version. Email, WhatsApp and social messaging require authorised provider integrations in the backend. Drafts are saved here for review; nothing is sent.</div>
+   <div class="notice blue">Android phone handoff is enabled. Choose WhatsApp, SMS, email or call on a saved draft. LeadPulse opens the matching Android app with the recipient and message prepared; you review it and tap Send inside that app. LeadPulse never sends messages silently.</div>
    <div class="grid layout2">
     <div class="card"><h3>Create outreach draft</h3><div class="formgrid">
      <div class="field wide"><label>Choose a saved lead</label><select id="draftLead"></select></div>
@@ -102,16 +102,23 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.app{display:gri
    <div class="page-head"><div><div class="eyebrow">Workspace configuration</div><h1>Settings</h1><p class="sub">Manage your local workspace and data.</p></div></div>
    <div class="grid layout2">
     <div class="card"><h3>Workspace preferences</h3><div class="formgrid"><div class="field wide"><label>Freelancer / agency name</label><input id="agencyName" placeholder="Your business name"></div><div class="field wide"><label>Primary service</label><input id="primaryService" placeholder="e.g. Website design and development"></div><div class="field wide"><label>Target customer profile</label><textarea id="targetProfile" placeholder="Describe the clients you want to work with..."></textarea></div></div><button class="btn primary" style="margin-top:12px" onclick="saveSettings()">Save preferences</button></div>
-    <div class="card"><h3>AI API settings</h3>
-     <div class="notice">These fields save configuration in this browser. Live AI requests require a secure backend. Do not publish API keys in this HTML file or GitHub.</div>
+    <div class="card"><h3>AI brain providers</h3>
+     <div class="notice">Configure Gemini and Groq separately, then choose which one LeadPulse should use as its active AI brain. These settings are saved in this browser only; live AI calls require a secure backend. Do not publish API keys in this HTML file or GitHub.</div>
+     <div class="field wide"><label>Active AI brain</label><select id="activeAIProvider"><option value="gemini">Google Gemini</option><option value="groq">Groq</option></select></div>
+     <div class="divider"></div>
+     <h4 style="margin:12px 0 8px">Google Gemini</h4>
      <div class="formgrid">
-      <div class="field"><label>AI provider</label><select id="aiProvider"><option>OpenAI</option><option>Anthropic</option><option>Google Gemini</option><option>OpenAI-compatible API</option></select></div>
-      <div class="field"><label>Model name</label><input id="aiModel" placeholder="e.g. gpt-4.1-mini"></div>
-      <div class="field wide"><label>API key</label><input id="aiApiKey" type="password" autocomplete="off" placeholder="Paste your API key"></div>
-      <div class="field wide"><label>API base URL (optional)</label><input id="aiBaseUrl" placeholder="For compatible providers"></div>
+      <div class="field wide"><label>Gemini model</label><input id="geminiModel" placeholder="e.g. gemini-2.5-flash"></div>
+      <div class="field wide"><label>Gemini API key</label><input id="geminiApiKey" type="password" autocomplete="off" placeholder="Paste your Google AI Studio key"></div>
      </div>
-     <div class="actions" style="margin-top:12px"><button class="btn primary" onclick="saveAISettings()">Save API settings</button><button class="btn" onclick="loadAISettings(true)">Load saved settings</button><button class="btn danger" onclick="clearAISettings()">Clear API settings</button></div>
-     <p class="footer-note" id="aiSettingsStatus">API settings are not connected to a live AI service yet.</p>
+     <div class="divider"></div>
+     <h4 style="margin:12px 0 8px">Groq</h4>
+     <div class="formgrid">
+      <div class="field wide"><label>Groq model</label><input id="groqModel" placeholder="Enter a model ID from Groq Console"></div>
+      <div class="field wide"><label>Groq API key</label><input id="groqApiKey" type="password" autocomplete="off" placeholder="Paste your Groq API key"></div>
+     </div>
+     <div class="actions" style="margin-top:12px"><button class="btn primary" onclick="saveAISettings()">Save AI settings</button><button class="btn" onclick="loadAISettings(true)">Load saved settings</button><button class="btn danger" onclick="clearAISettings()">Clear AI settings</button></div>
+     <p class="footer-note" id="aiSettingsStatus">Gemini and Groq can be configured independently. Live AI requests still need the secure backend connection.</p>
     </div>
     <div class="card"><h3>Data & privacy</h3><p class="muted smalltext">LeadPulse stores saved leads, drafts, plugin preferences and workspace settings in this browser's local storage. Clearing browser data may erase them. Export your leads regularly.</p><div class="actions"><button class="btn" onclick="exportCSV()">Export leads CSV</button><button class="btn danger" onclick="clearData()">Clear local workspace</button></div><p class="footer-note">External discovery requests are sent to public OpenStreetMap services. Avoid collecting or storing sensitive personal information.</p></div>
    </div>
@@ -184,9 +191,39 @@ function startDraft(id){go('outreach');refreshDraftLead();document.getElementByI
 function refreshDraftLead(){let s=document.getElementById('draftLead'),old=s.value;s.innerHTML='<option value="">Select a saved lead</option>'+state.leads.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join('');if(state.leads.some(x=>x.id===old))s.value=old}
 function generateDraft(){let id=document.getElementById('draftLead').value,x=state.leads.find(y=>y.id===id);if(!x){toast('Save or select a lead first.');return}let service=document.getElementById('service').value,obs=document.getElementById('observation').value.trim();let agency=state.settings.agencyName||'I';let body=`Hello ${x.name},\n\nI’m ${agency}, and I help businesses with ${service.toLowerCase()}.\n\n${obs?`I noticed: ${obs}\n\n`:'I came across your business and wanted to introduce my services in case they could be useful to your team.\n\n'}Would you be open to a brief conversation about what you’re currently working on and whether I could help?\n\nBest,\n${agency}`;document.getElementById('draftBody').value=body;toast('Draft generated. Review and personalise it before saving.')}
 function saveDraft(){let id=document.getElementById('draftLead').value,x=state.leads.find(y=>y.id===id),body=document.getElementById('draftBody').value.trim();if(!x||!body){toast('Choose a lead and write a message first.');return}state.drafts.push({id:'draft-'+Date.now(),leadId:id,leadName:x.name,channel:document.getElementById('channel').value,service:document.getElementById('service').value,body,status:'Pending approval',created:new Date().toISOString()});persist();renderDrafts();toast('Saved to approval queue. Nothing has been sent.')}
-function renderDrafts(){let el=document.getElementById('draftList');if(!state.drafts.length){el.className='empty';el.textContent='No drafts yet. Create one to get started.';return}el.className='';el.innerHTML=state.drafts.slice().reverse().map(d=>`<div class="card" style="padding:13px;margin-bottom:10px;background:#101a2d"><div style="display:flex;justify-content:space-between;gap:8px"><strong>${esc(d.leadName)}</strong><span class="pill amber">${esc(d.status)}</span></div><div class="muted smalltext">${esc(d.channel)} · ${esc(d.service)}</div><p class="smalltext" style="white-space:pre-wrap;color:#c7d2e8">${esc(d.body)}</p><div class="actions"><button class="btn small" onclick="copyDraft('${esc(d.id)}')">Copy</button><button class="btn small" onclick="approveDraft('${esc(d.id)}')">Mark reviewed</button><button class="btn small danger" onclick="removeDraft('${esc(d.id)}')">Delete</button></div></div>`).join('')}
+function renderDrafts(){let el=document.getElementById('draftList');if(!state.drafts.length){el.className='empty';el.textContent='No drafts yet. Create one to get started.';return}el.className='';el.innerHTML=state.drafts.slice().reverse().map(d=>`<div class="card" style="padding:13px;margin-bottom:10px;background:#101a2d"><div style="display:flex;justify-content:space-between;gap:8px"><strong>${esc(d.leadName)}</strong><span class="pill amber">${esc(d.status)}</span></div><div class="muted smalltext">${esc(d.channel)} · ${esc(d.service)}</div><p class="smalltext" style="white-space:pre-wrap;color:#c7d2e8">${esc(d.body)}</p><div class="actions"><button class="btn small primary" onclick="phoneHandoff('${esc(d.id)}','whatsapp')">WhatsApp</button><button class="btn small" onclick="phoneHandoff('${esc(d.id)}','sms')">SMS</button><button class="btn small" onclick="phoneHandoff('${esc(d.id)}','email')">Email</button><button class="btn small" onclick="phoneHandoff('${esc(d.id)}','call')">Call</button><button class="btn small" onclick="copyDraft('${esc(d.id)}')">Copy</button><button class="btn small" onclick="approveDraft('${esc(d.id)}')">Mark reviewed</button><button class="btn small danger" onclick="removeDraft('${esc(d.id)}')">Delete</button></div></div>`).join('')}
+
+function cleanPhone(value){return String(value||'').replace(/[^\d+]/g,'').replace(/^00/,'+')}
+function phoneHandoff(id,kind){
+ const d=state.drafts.find(x=>x.id===id);if(!d){toast('Draft not found.');return}
+ const lead=state.leads.find(x=>x.id===d.leadId);if(!lead){toast('The saved lead could not be found.');return}
+ const phone=cleanPhone(lead.phone),body=d.body||'',encoded=encodeURIComponent(body);
+ let url='';
+ if(kind==='whatsapp'){
+  if(!phone){toast('This lead has no phone number. Add and verify one in lead details first.');return}
+  const digits=phone.replace(/\D/g,'');
+  if(digits.length<7){toast('The phone number looks incomplete. Verify it before messaging.');return}
+  url='https://wa.me/'+digits+'?text='+encoded;
+ }else if(kind==='sms'){
+  if(!phone){toast('This lead has no phone number. Add one in lead details first.');return}
+  url='sms:'+phone+'?body='+encoded;
+ }else if(kind==='email'){
+  if(!lead.email){toast('This lead has no email address. Add one in lead details first.');return}
+  url='mailto:'+encodeURIComponent(lead.email)+'?subject='+encodeURIComponent('A quick introduction')+'&body='+encoded;
+ }else if(kind==='call'){
+  if(!phone){toast('This lead has no phone number. Add one in lead details first.');return}
+  url='tel:'+phone;
+ }
+ if(!url)return;
+ // Use a direct navigation so Android can route the URL to the installed app.
+ window.location.href=url;
+ d.lastHandoff={channel:kind,at:new Date().toISOString()};
+ d.status='Opened on device — awaiting your confirmation';
+ persist();renderDrafts();
+}
+
 function copyDraft(id){let d=state.drafts.find(x=>x.id===id);if(d)navigator.clipboard?.writeText(d.body).then(()=>toast('Draft copied.')).catch(()=>toast('Clipboard access unavailable.'))}
-function approveDraft(id){let d=state.drafts.find(x=>x.id===id);if(d){d.status='Reviewed by user';persist();renderDrafts();toast('Marked as reviewed. No message was sent.')}}function removeDraft(id){state.drafts=state.drafts.filter(x=>x.id!==id);persist();renderDrafts()}
+function approveDraft(id){let d=state.drafts.find(x=>x.id===id);if(d){d.status='Reviewed by user';persist();renderDrafts();toast('Marked as reviewed. Confirm separately if you sent it in your messaging app.')}}function removeDraft(id){state.drafts=state.drafts.filter(x=>x.id!==id);persist();renderDrafts()}
 function renderPipeline(){let stages=['New','Researching','Qualified','Contacted','Replied','Meeting','Won','Lost'];document.getElementById('pipeline').innerHTML=`<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px">${stages.map(s=>{let a=state.leads.filter(x=>x.stage===s);return `<div class="card" style="padding:13px"><div class="muted smalltext">${s}</div><div class="stat-value">${a.length}</div><div class="smalltext">${a.slice(0,3).map(x=>esc(x.name)).join('<br>')||'<span class="muted">No leads</span>'}</div></div>`}).join('')}</div>`}
 function renderPlugins(){document.getElementById('pluginGrid').innerHTML=pluginDefs.map((p,i)=>{let enabled=state.plugins[i]??(i===4||i===8);return `<div class="card plugin"><div class="plugin-top"><div class="plugin-icon">${p[0]}</div><span class="pill ${enabled?'green':'amber'}">${enabled?'Enabled':'Not connected'}</span></div><div><strong>${p[1]}</strong><div class="muted smalltext">${p[3]}</div></div><p>${p[2]}</p><div class="plugin-foot"><span class="muted smalltext">${p[4]}</span><button class="switch ${enabled?'on':''}" aria-label="Toggle ${p[1]}" onclick="togglePlugin(${i})"></button></div></div>`}).join('')}
 function togglePlugin(i){state.plugins[i]=!(state.plugins[i]??(i===4||i===8));persist();renderPlugins();toast('Plugin preference updated. A backend connection may still be required.')}
@@ -194,29 +231,31 @@ function saveSettings(){state.settings={agencyName:document.getElementById('agen
 function exportCSV(){let rows=[['Business','Category','Area','Address','Website','Phone','Email','Opening hours','Stage','Score','Verification notes']];state.leads.forEach(x=>rows.push([x.name,x.category,x.area,x.address,x.website,x.phone,x.email,x.hours,x.stage,x.score,x.notes]));let csv=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='leadpulse-leads.csv';a.click();URL.revokeObjectURL(a.href);toast('CSV export prepared.')}
 
 function saveAISettings(){
- let s=state.settings||{};
- s.aiProvider=document.getElementById('aiProvider').value;
- s.aiModel=document.getElementById('aiModel').value.trim();
- s.aiApiKey=document.getElementById('aiApiKey').value;
- s.aiBaseUrl=document.getElementById('aiBaseUrl').value.trim();
- state.settings=s;persist();
- document.getElementById('aiSettingsStatus').textContent='Settings saved in this browser. A secure backend is still required for live AI requests.';
- toast('AI API settings saved.');
+ const settings=state.settings||{};
+ settings.activeAIProvider=document.getElementById('activeAIProvider').value;
+ settings.aiProviders=settings.aiProviders||{};
+ settings.aiProviders.gemini={model:document.getElementById('geminiModel').value.trim(),apiKey:document.getElementById('geminiApiKey').value.trim()};
+ settings.aiProviders.groq={model:document.getElementById('groqModel').value.trim(),apiKey:document.getElementById('groqApiKey').value.trim()};
+ state.settings=settings;persist();
+ document.getElementById('aiSettingsStatus').textContent='Gemini and Groq settings saved separately in this browser. Live AI calls still need the secure backend connection.';
+ toast('AI provider settings saved.');
 }
 function loadAISettings(showMessage=false){
- let s=state.settings||{};
- document.getElementById('aiProvider').value=s.aiProvider||'OpenAI';
- document.getElementById('aiModel').value=s.aiModel||'';
- document.getElementById('aiApiKey').value=s.aiApiKey||'';
- document.getElementById('aiBaseUrl').value=s.aiBaseUrl||'';
- if(showMessage) document.getElementById('aiSettingsStatus').textContent=s.aiApiKey?'Saved API settings loaded.':'No API settings have been saved.';
+ const settings=state.settings||{},providers=settings.aiProviders||{},gemini=providers.gemini||{},groq=providers.groq||{};
+ document.getElementById('activeAIProvider').value=settings.activeAIProvider||'gemini';
+ document.getElementById('geminiModel').value=gemini.model||settings.aiModel||'';
+ document.getElementById('geminiApiKey').value=gemini.apiKey||((settings.aiProvider==='Google Gemini')?settings.aiApiKey||'':'');
+ document.getElementById('groqModel').value=groq.model||'';
+ document.getElementById('groqApiKey').value=groq.apiKey||'';
+ if(showMessage)document.getElementById('aiSettingsStatus').textContent=(gemini.apiKey||groq.apiKey)?'Saved provider settings loaded.':'No AI provider keys have been saved yet.';
 }
 function clearAISettings(){
- if(!confirm('Clear the saved AI API settings?'))return;
- let s=state.settings||{};delete s.aiProvider;delete s.aiModel;delete s.aiApiKey;delete s.aiBaseUrl;
- state.settings=s;persist();loadAISettings();
- document.getElementById('aiSettingsStatus').textContent='AI API settings cleared.';
- toast('AI API settings cleared.');
+ if(!confirm('Clear the saved Gemini and Groq API settings?'))return;
+ const settings=state.settings||{};
+ delete settings.aiProviders;delete settings.activeAIProvider;delete settings.aiProvider;delete settings.aiModel;delete settings.aiApiKey;delete settings.aiBaseUrl;
+ state.settings=settings;persist();loadAISettings();
+ document.getElementById('aiSettingsStatus').textContent='Gemini and Groq settings cleared.';
+ toast('AI settings cleared.');
 }
 
 function clearData(){if(!confirm('This permanently clears leads, drafts, settings and plugin preferences stored in this browser. Continue?'))return;localStorage.removeItem(STORE);state=loadState();found=[];renderOverview();renderLeads();renderDrafts();renderPlugins();renderPipeline();toast('Local workspace cleared.')}
